@@ -27,7 +27,8 @@ logger.setLevel(logging.INFO)
 def build_response(status_code, err=None, body=None, headers=None):
     if body is None:
         body = {}
-    body["error"] = err
+    if err:
+        body["error"] = err
     response = {
         "statusCode": status_code,
         "body": json.dumps(body),

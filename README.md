@@ -24,7 +24,6 @@ curl -s -H "Authorization: Bearer THE_NEKOBASU_TOKEN" \
   "operation": "check",
   "serial_number": "ABCDEFGHIJK",
   "check": true,
-  "error": null
 }
 ```
 
@@ -41,7 +40,6 @@ curl -s -XPOST -H "Authorization: Bearer THE_NEKOBASU_TOKEN" \
 {
   "operation": "start",
   "serial_number": "ABCDEFGHIJK",
-  "error": null
 }
 ```
 
@@ -58,7 +56,6 @@ curl -s -XPOST -H "Authorization: Bearer THE_NEKOBASU_TOKEN" \
 {
   "operation": "finish",
   "serial_number": "ABCDEFGHIJK",
-  "error": null
 }
 ```
 
