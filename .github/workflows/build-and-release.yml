@@ -59,4 +59,3 @@ jobs:
           aws s3 cp nekobus_lambda.zip s3://${{ vars.AWS_BUCKET_PREFIX }}-eu-central-1/nekobus/lambda/nekobus_lambda-$REF.zip
           aws s3 cp nekobus_lambda.zip s3://${{ vars.AWS_BUCKET_PREFIX }}-us-east-1/nekobus/lambda/nekobus_lambda-$REF.zip
           aws s3 cp nekobus_lambda.zip s3://${{ vars.AWS_BUCKET_PREFIX }}-us-east-2/nekobus/lambda/nekobus_lambda-$REF.zip
-          ZIP_ARCHIVE: "${{ steps.build-zip-archive.outputs.zip_archive }}"
