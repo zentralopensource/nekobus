@@ -90,14 +90,14 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      NEKOBASU_SECRET_NAME      = aws_secretsmanager_secret.secrets.name
-      NEKOBASU_JAMF_BASE_URL    = var.jamf_base_url
-      NEKOBASU_JAMF_CLIENT_ID   = var.jamf_client_id
-      NEKOBASU_ZENTRAL_BASE_URL = var.zentral_base_url
-      NEKOBASU_PROFILE_UUID     = var.profile_uuid
-      NEKOBASU_TAXONOMY         = var.taxonomy
-      NEKOBASU_STARTED_TAG      = var.started_tag
-      NEKOBASU_FINISHED_TAG     = var.finished_tag
+      NEKOBUS_SECRET_NAME      = aws_secretsmanager_secret.secrets.name
+      NEKOBUS_JAMF_BASE_URL    = var.jamf_base_url
+      NEKOBUS_JAMF_CLIENT_ID   = var.jamf_client_id
+      NEKOBUS_ZENTRAL_BASE_URL = var.zentral_base_url
+      NEKOBUS_PROFILE_UUID     = var.profile_uuid
+      NEKOBUS_TAXONOMY         = var.taxonomy
+      NEKOBUS_STARTED_TAG      = var.started_tag
+      NEKOBUS_FINISHED_TAG     = var.finished_tag
     }
   }
 

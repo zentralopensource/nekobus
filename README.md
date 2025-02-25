@@ -17,7 +17,7 @@ The lambda verifies in Zentral that the device has the correct DEP enrollment as
 Example:
 
 ```
-curl -s -H "Authorization: Bearer THE_NEKOBASU_TOKEN" \
+curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 'https://xxx.lambda-url.us-east-1.on.aws/?operation=check&serial_number=ABCDEFGHIJK'|jq .
 
 {
@@ -34,7 +34,7 @@ HTTP Method: `POST`
 **IMPORTANT** The lambda does the same verification as during the `check` operation, and if successful, the device is Unenrolled in Jamf, and the *started tag* is set on it in Zentral.
 
 ```
-curl -s -XPOST -H "Authorization: Bearer THE_NEKOBASU_TOKEN" \
+curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 'https://xxx.lambda-url.us-east-1.on.aws/?operation=start&serial_number=ABCDEFGHIJK'|jq .
 
 {
@@ -50,7 +50,7 @@ HTTP Method: `POST`
 The *finished tag* is set on the device in Zentral.
 
 ```
-curl -s -XPOST -H "Authorization: Bearer THE_NEKOBASU_TOKEN" \
+curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 'https://xxx.lambda-url.us-east-1.on.aws/?operation=finish&serial_number=ABCDEFGHIJK'|jq .
 
 {

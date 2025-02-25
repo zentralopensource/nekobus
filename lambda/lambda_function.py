@@ -10,18 +10,18 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-# NEKOBASU_SECRET_NAME
+# NEKOBUS_SECRET_NAME
 # references a AWS secret with a JSON value containing:
 # - nekobus_token
 # - jamf_client_secret
 # - zentral_token
-# NEKOBASU_JAMF_BASE_URL
-# NEKOBASU_JAMF_CLIENT_ID
-# NEKOBASU_ZENTRAL_BASE_URL
-# NEKOBASU_PROFILE_UUID
-# NEKOBASU_TAXONOMY
-# NEKOBASU_STARTED_TAG
-# NEKOBASU_FINISHED_TAG
+# NEKOBUS_JAMF_BASE_URL
+# NEKOBUS_JAMF_CLIENT_ID
+# NEKOBUS_ZENTRAL_BASE_URL
+# NEKOBUS_PROFILE_UUID
+# NEKOBUS_TAXONOMY
+# NEKOBUS_STARTED_TAG
+# NEKOBUS_FINISHED_TAG
 
 
 def build_response(status_code, err=None, body=None, headers=None):
@@ -71,7 +71,7 @@ class LamdbaHandler:
         try:
             r = requests.get(
                 "http://localhost:2773/secretsmanager/get",
-                params={"secretId": os.environ["NEKOBASU_SECRET_NAME"]},
+                params={"secretId": os.environ["NEKOBUS_SECRET_NAME"]},
                 headers={
                     "X-Aws-Parameters-Secrets-Token": os.environ["AWS_SESSION_TOKEN"]
                 },
@@ -101,15 +101,15 @@ class LamdbaHandler:
             nekobus_token, jamf_client_secret, zentral_token = self.get_secrets()
             self.nekobus_token_bytes = nekobus_token.encode("utf-8")
             self.mm = MigrationManager(
-                os.environ["NEKOBASU_JAMF_BASE_URL"],
-                os.environ["NEKOBASU_JAMF_CLIENT_ID"],
+                os.environ["NEKOBUS_JAMF_BASE_URL"],
+                os.environ["NEKOBUS_JAMF_CLIENT_ID"],
                 jamf_client_secret,
-                os.environ["NEKOBASU_ZENTRAL_BASE_URL"],
+                os.environ["NEKOBUS_ZENTRAL_BASE_URL"],
                 zentral_token,
-                os.environ["NEKOBASU_PROFILE_UUID"],
-                os.environ["NEKOBASU_TAXONOMY"],
-                os.environ["NEKOBASU_STARTED_TAG"],
-                os.environ["NEKOBASU_FINISHED_TAG"],
+                os.environ["NEKOBUS_PROFILE_UUID"],
+                os.environ["NEKOBUS_TAXONOMY"],
+                os.environ["NEKOBUS_STARTED_TAG"],
+                os.environ["NEKOBUS_FINISHED_TAG"],
             )
 
     def authenticate(self, event):
