@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Nekobus"
+authors = [
+  {"name" = "Éric Falconnier", "email" = "eric@zentral.com"},
+]
+readme = "README.md"
+description = "A collection of tools to help with MDM migrations"
+dynamic = ["version"]
+requires-python = ">=3.10"
+classifiers = [
+   'Development Status :: 5 - Production/Stable',
+   'Programming Language :: Python :: 3.10',
+   'Programming Language :: Python :: 3.11',
+   'Programming Language :: Python :: 3.12',
+   'Programming Language :: Python :: 3.13',
+]
+dependencies = [
+  "requests",
+]
+
+[project.urls]
+Homepage = "https://www.zentral.com"
+Repository = "https://github.com/zentralopensource/nekobus.git"
+
+[tool.setuptools.packages.find]
+exclude = ["docs", "tests", "*README.md"]
+
+[tool.setuptools_scm]
+version_file = "nekobus/version.py"

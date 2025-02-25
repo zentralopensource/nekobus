@@ -1,0 +1,62 @@
+---
+name: build-and-release
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+permissions:
+  id-token: write  # This is required for requesting the JWT
+  contents: read   # This is required for actions/checkout
+
+jobs:
+  build-and-release-lambda:
+    runs-on: ubuntu-latest
+    if: vars.AWS_ROLE_ARN
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: "tree:0"
+
+      - name: Create tmp dir where the dependencies are to be installed
+        run: mkdir ./_tmp
+
+      - name: Install dependencies using a python docker container
+        run: >
+          docker run
+          -v "$PWD":/var/lambda_mount
+          python:3.12
+          pip install
+          --platform manylinux2014_x86_64
+          --target=package
+          --implementation cp
+          --python-version 3.12
+          --only-binary=:all:
+          --upgrade
+          /var/lambda_mount/ -t /var/lambda_mount/_tmp
+
+      - name: Create a ZIP archive with the content of the tmp dir
+        working-directory: ./_tmp
+        run: zip -r9 ../nekobus_lambda.zip . > /dev/null
+
+      - name: Add the function code to the ZIP archive
+        working-directory: ./lambda
+        run: zip -g ../nekobus_lambda.zip lambda_function.py
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          role-session-name: ztl_admin_nekobus_lambda
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Upload ZIP archive to S3
+        run: |
+          REF=$(git describe --tags --always)
+          aws s3 cp nekobus_lambda.zip s3://${{ vars.AWS_BUCKET_PREFIX }}-eu-central-1/nekobus/lambda/nekobus_lambda-$REF.zip
+          aws s3 cp nekobus_lambda.zip s3://${{ vars.AWS_BUCKET_PREFIX }}-us-east-1/nekobus/lambda/nekobus_lambda-$REF.zip
+          aws s3 cp nekobus_lambda.zip s3://${{ vars.AWS_BUCKET_PREFIX }}-us-east-2/nekobus/lambda/nekobus_lambda-$REF.zip
+          ZIP_ARCHIVE: "${{ steps.build-zip-archive.outputs.zip_archive }}"

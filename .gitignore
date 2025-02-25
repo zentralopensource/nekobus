@@ -1,0 +1,21 @@
+# vim
+*.sw[op]
+
+# build products
+# TODO cleanup
+__pycache__
+build
+dist
+nekobasu.egg-info
+venv
+
+# file automatically generated
+nekobus/version.py
+
+# terraform
+.terraform*
+*.tfstate*
+*.tfvars
+
+# qll ZIP archives
+*.zip
