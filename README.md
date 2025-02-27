@@ -73,5 +73,6 @@ You need a Role with the following permissions:
  * `inventory.add_taxonomy`
  * `inventory.add_machinetag`
  * `inventory.delete_machinetag`
+ * `mdm.view_depdevice`
 
 You need a Service Account attached to this Role. Save its API token.
