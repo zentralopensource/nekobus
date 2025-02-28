@@ -7,7 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 class MigrationError(Exception):
-    pass
+    def __init__(self, msg, status_code=400):
+        super().__init__(msg)
+        self.status_code = status_code
 
 
 class MigrationManager:
@@ -20,6 +22,7 @@ class MigrationManager:
         zentral_token,
         profile_uuid,
         taxonomy,
+        ready_tag,
         started_tag,
         finished_tag,
     ):
@@ -27,16 +30,25 @@ class MigrationManager:
         self.zentral_client = ZentralClient(zentral_base_url, zentral_token)
         self.profile_uuid = profile_uuid
         self.taxonomy = taxonomy
+        self.ready_tag = ready_tag
         self.started_tag = started_tag
         self.finished_tag = finished_tag
 
     def check(self, serial_number):
         logger.info("Check device %s", serial_number)
+        result = self.zentral_client.check_tag(serial_number, self.ready_tag)
+        if result is None:
+            raise MigrationError("Device not found", 404)
+        elif result:
+            logger.info("Device %s has the %s tag", serial_number, self.ready_tag)
+        else:
+            logger.info("Device %s doesn't have the %s tag", serial_number, self.ready_tag)
+            return False
         if self.zentral_client.check_dep_device_enrollment(serial_number, self.profile_uuid):
-            logger.info("Device %s OK", serial_number)
+            logger.info("Device %s DEP enrollment %s OK", serial_number, self.profile_uuid)
             return True
         else:
-            logger.info("Device %s not OK", serial_number)
+            logger.info("Device %s DEP enrollment %s OK", serial_number, self.profile_uuid)
             return False
 
     def start(self, serial_number):

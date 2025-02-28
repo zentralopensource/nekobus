@@ -12,7 +12,7 @@ Operations are passed as `operation` parameter in the URL query. The `serial_num
 
 HTTP Method: `GET`
 
-The lambda verifies in Zentral that the device has the correct DEP enrollment assigned in the Apple Business Manager.
+The lambda verifies in Zentral that the device has the *ready tag* and the correct DEP enrollment assigned in the Apple Business Manager.
 
 Example:
 
@@ -31,7 +31,11 @@ curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 
 HTTP Method: `POST`
 
-**IMPORTANT** The lambda does the same verification as during the `check` operation, and if successful, the device is Unenrolled in Jamf, and the *started tag* is set on it in Zentral.
+**IMPORTANT** The lambda does the same verification as during the `check` operation, and if successful:
+
+ * the device is Unenrolled in Jamf
+ * the *ready tag* is removed in Zentral
+ * the *started tag* is set in Zentral.
 
 ```
 curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
@@ -47,7 +51,7 @@ curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 
 HTTP Method: `POST`
 
-The *finished tag* is set on the device in Zentral.
+The *started tag* is removed and the *finished tag* is set on the device in Zentral.
 
 ```
 curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \

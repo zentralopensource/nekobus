@@ -96,6 +96,7 @@ resource "aws_lambda_function" "lambda" {
       NEKOBUS_ZENTRAL_BASE_URL = var.zentral_base_url
       NEKOBUS_PROFILE_UUID     = var.profile_uuid
       NEKOBUS_TAXONOMY         = var.taxonomy
+      NEKOBUS_READY_TAG        = var.ready_tag
       NEKOBUS_STARTED_TAG      = var.started_tag
       NEKOBUS_FINISHED_TAG     = var.finished_tag
     }

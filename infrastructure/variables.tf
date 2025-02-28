@@ -53,6 +53,10 @@ variable "taxonomy" {
   type = string
 }
 
+variable "ready_tag" {
+  type = string
+}
+
 variable "started_tag" {
   type = string
 }

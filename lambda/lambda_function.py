@@ -20,6 +20,7 @@ logger.setLevel(logging.INFO)
 # NEKOBUS_ZENTRAL_BASE_URL
 # NEKOBUS_PROFILE_UUID
 # NEKOBUS_TAXONOMY
+# NEKOBUS_READY_TAG
 # NEKOBUS_STARTED_TAG
 # NEKOBUS_FINISHED_TAG
 
@@ -108,6 +109,7 @@ class LamdbaHandler:
                 zentral_token,
                 os.environ["NEKOBUS_PROFILE_UUID"],
                 os.environ["NEKOBUS_TAXONOMY"],
+                os.environ["NEKOBUS_READY_TAG"],
                 os.environ["NEKOBUS_STARTED_TAG"],
                 os.environ["NEKOBUS_FINISHED_TAG"],
             )
@@ -151,7 +153,7 @@ class LamdbaHandler:
             result = getattr(self.mm, op)(serial_number)
         except MigrationError as e:
             logger.error("Operation %s device %s error: %s", op, serial_number, e)
-            raise LambdaError("Bad request", 400, body=body)
+            raise LambdaError("Not found" if e.status_code == 404 else "Bad request", e.status_code, body=body)
         except Exception:
             logger.exception("Operation %s device %s error", op, serial_number)
             raise LambdaError("Internal server error", 500, body=body)

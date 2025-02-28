@@ -1,10 +1,21 @@
+import base64
 import logging
 import requests
+import urllib.parse
 from .utils import CustomHTTPAdapter
 from .version import __version__
 
 
 logger = logging.getLogger(__name__)
+
+
+def make_url_safe_serial_number(serial_number):
+    if serial_number.startswith(".") or \
+       urllib.parse.quote(serial_number, safe="") != serial_number:
+        return ".{}".format(
+            base64.urlsafe_b64encode(serial_number.encode("utf-8")).decode("utf-8").rstrip("=")
+        )
+    return serial_number
 
 
 class ZentralClientError(Exception):
@@ -43,6 +54,24 @@ class ZentralClient:
             logger.info("Unknown DEP device %s", serial_number)
             return None
 
+    def get_tags(self, serial_number):
+        logger.info("Get device %s tags", serial_number)
+        url_safe_serial_number = make_url_safe_serial_number(serial_number)
+        try:
+            r = self.session.get(f"{self.api_base_url}/inventory/machines/{url_safe_serial_number}/meta/")
+            if r.status_code == 404:
+                return None
+            r.raise_for_status()
+            return r.json().get("tags", [])
+        except Exception:
+            raise ZentralClientError(f"Could not get device {serial_number} tags")
+
+    def check_tag(self, serial_number, tag):
+        tags = self.get_tags(serial_number)
+        if tags is None:
+            return
+        return any(t["name"] == tag for t in tags)
+
     def check_dep_device_enrollment(self, serial_number, expected_profile_uuid):
         logger.info("Check DEP device %s enrollment", serial_number)
         dep_device = self.get_dep_device(serial_number)
@@ -57,8 +86,6 @@ class ZentralClient:
         if profile_status != "pushed":
             logger.warning("Wrong profile status %s for DEP device %s", profile_status or "-", serial_number)
             ok = False
-        if ok:
-            logger.info("DEP device %s enrollment OK", serial_number)
         return ok
 
     def set_taxonomy_tags(self, serial_number, taxonomy, tags):
