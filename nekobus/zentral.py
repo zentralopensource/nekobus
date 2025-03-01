@@ -83,7 +83,7 @@ class ZentralClient:
             logger.warning("Wrong profile UUID %s for DEP device %s", profile_uuid or "-", serial_number)
             ok = False
         profile_status = dep_device.get("profile_status")
-        if profile_status != "pushed":
+        if profile_status not in ("assigned", "pushed"):
             logger.warning("Wrong profile status %s for DEP device %s", profile_status or "-", serial_number)
             ok = False
         return ok
