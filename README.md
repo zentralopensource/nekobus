@@ -4,7 +4,7 @@ This AWS lambda function supports four operations:
 
  - `check`
  - `start`
- - `confirm_unenrolled`
+ - `status`
  - `finish`
 
 Operations are passed as `operation` parameter in the URL query. The `serial_number` query parameter is also required.
