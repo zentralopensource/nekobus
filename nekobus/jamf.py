@@ -80,11 +80,19 @@ class JamfClient:
                 raise JamfClientError(f"{verb} {url} status code {r.status_code}")
         raise JamfClientError(f"{verb} {url} Unauthorized")
 
-    def get_computer_device_id(self, serial_number):
-        logger.info("Get computer %s Jamf ID", serial_number)
+    def get_computer_info(self, serial_number):
+        logger.info("Get Jamf computer %s info", serial_number)
         response = self.make_query("GET", f"/computers/serialnumber/{serial_number}", missing_ok=True)
         if response is None:
             logger.error("Unknown Jamf computer %s", serial_number)
+        else:
+            logger.info("Found Jamf computer %s", serial_number)
+        return response
+
+    def get_computer_device_id(self, serial_number):
+        logger.info("Get Jamf computer %s ID", serial_number)
+        response = self.get_computer_info(serial_number)
+        if not response:
             return
         jamf_id = response["computer"]["general"]["id"]
         logger.info("Computer %s has Jamf ID %s", serial_number, jamf_id)
@@ -103,3 +111,14 @@ class JamfClient:
         else:
             logger.info("Unenroll command queued for computer %s", serial_number)
             return True
+
+    def is_computer_device_mdm_capable(self, serial_number):
+        logger.info("Is computer %s MDM capable?", serial_number)
+        response = self.get_computer_info(serial_number)
+        try:
+            mdm_capable = response["computer"]["general"]["mdm_capable"]
+        except Exception:
+            logger.warning("Missing computer %s MDM capable info. Default to False", serial_number)
+            mdm_capable = False
+        logger.info("Computer %s MDM capable %s", serial_number, mdm_capable)
+        return mdm_capable

@@ -1,9 +1,10 @@
 # AWS lambda for MDM migration
 
-This AWS lambda function supports three operations:
+This AWS lambda function supports four operations:
 
  - `check`
  - `start`
+ - `confirm_unenrolled`
  - `finish`
 
 Operations are passed as `operation` parameter in the URL query. The `serial_number` query parameter is also required.
@@ -47,11 +48,28 @@ curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 }
 ```
 
+### `confirm_unenrolled`
+
+HTTP Method: `GET`
+
+Confirm with a Jamf API call that the device is not MDM capable anymore. If this is the case, the *started tag* is removed and the *unenrolled tag* is set on the device in Zentral.
+
+```
+curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
+'https://xxx.lambda-url.us-east-1.on.aws/?operation=confirm_unenrolled&serial_number=ABCDEFGHIJK'|jq .
+
+{
+  "operation": "confirm_unenrolled",
+  "serial_number": "ABCDEFGHIJK",
+  "unenrolled": true
+}
+```
+
 ### `finish`
 
 HTTP Method: `POST`
 
-The *started tag* is removed and the *finished tag* is set on the device in Zentral.
+The *unenrolled tag* is removed and the *finished tag* is set on the device in Zentral.
 
 ```
 curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \

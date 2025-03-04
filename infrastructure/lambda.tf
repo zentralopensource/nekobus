@@ -98,6 +98,7 @@ resource "aws_lambda_function" "lambda" {
       NEKOBUS_TAXONOMY         = var.taxonomy
       NEKOBUS_READY_TAG        = var.ready_tag
       NEKOBUS_STARTED_TAG      = var.started_tag
+      NEKOBUS_UNENROLLED_TAG   = var.unenrolled_tag
       NEKOBUS_FINISHED_TAG     = var.finished_tag
     }
   }

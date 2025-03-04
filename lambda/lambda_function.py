@@ -22,6 +22,7 @@ logger.setLevel(logging.INFO)
 # NEKOBUS_TAXONOMY
 # NEKOBUS_READY_TAG
 # NEKOBUS_STARTED_TAG
+# NEKOBUS_UNENROLLED_TAG
 # NEKOBUS_FINISHED_TAG
 
 
@@ -58,6 +59,7 @@ class LamdbaHandler:
     allowed_operations = {
         "check": "GET",
         "start": "POST",
+        "confirm_unenrolled": "GET",
         "finish": "POST",
     }
 
@@ -111,6 +113,7 @@ class LamdbaHandler:
                 os.environ["NEKOBUS_TAXONOMY"],
                 os.environ["NEKOBUS_READY_TAG"],
                 os.environ["NEKOBUS_STARTED_TAG"],
+                os.environ["NEKOBUS_UNENROLLED_TAG"],
                 os.environ["NEKOBUS_FINISHED_TAG"],
             )
 
@@ -161,6 +164,8 @@ class LamdbaHandler:
             logger.info("Operation %s device %s OK", op, serial_number)
             if op == "check":
                 body["check"] = result
+            elif op == "confirm_unenrolled":
+                body["unenrolled"] = result
             return build_response(200, body=body)
 
     def process_event(self, event):

@@ -61,6 +61,10 @@ variable "started_tag" {
   type = string
 }
 
+variable "unenrolled_tag" {
+  type = string
+}
+
 variable "finished_tag" {
   type = string
 }
