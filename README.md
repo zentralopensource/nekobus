@@ -96,6 +96,7 @@ You need a Role with the following permissions:
  * `inventory.add_taxonomy`
  * `inventory.add_machinetag`
  * `inventory.delete_machinetag`
+ * `inventory.view_machinesnapshot`
  * `mdm.view_depdevice`
  * `mdm.view_enrolleddevice`
 
