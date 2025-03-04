@@ -59,7 +59,7 @@ curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 'https://xxx.lambda-url.us-east-1.on.aws/?operation=confirm&serial_number=ABCDEFGHIJK'|jq .
 
 {
-  "operation": "confirm_unenrolled",
+  "operation": "status",
   "serial_number": "ABCDEFGHIJK",
   "jamf_status": "unenrolled",
   "zentral_status": "enrolled"
