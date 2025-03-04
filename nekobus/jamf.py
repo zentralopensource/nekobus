@@ -112,8 +112,8 @@ class JamfClient:
             logger.info("Unenroll command queued for computer %s", serial_number)
             return True
 
-    def is_computer_device_mdm_capable(self, serial_number):
-        logger.info("Is computer %s MDM capable?", serial_number)
+    def get_mdm_status(self, serial_number):
+        logger.info("Get computer %s MDM status", serial_number)
         response = self.get_computer_info(serial_number)
         try:
             mdm_capable = response["computer"]["general"]["mdm_capable"]
@@ -121,4 +121,7 @@ class JamfClient:
             logger.warning("Missing computer %s MDM capable info. Default to False", serial_number)
             mdm_capable = False
         logger.info("Computer %s MDM capable %s", serial_number, mdm_capable)
-        return mdm_capable
+        if mdm_capable:
+            return "enrolled"
+        else:
+            return "unenrolled"

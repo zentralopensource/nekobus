@@ -59,7 +59,7 @@ class LamdbaHandler:
     allowed_operations = {
         "check": "GET",
         "start": "POST",
-        "confirm_unenrolled": "GET",
+        "status": "GET",
         "finish": "POST",
     }
 
@@ -162,10 +162,8 @@ class LamdbaHandler:
             raise LambdaError("Internal server error", 500, body=body)
         else:
             logger.info("Operation %s device %s OK", op, serial_number)
-            if op == "check":
-                body["check"] = result
-            elif op == "confirm_unenrolled":
-                body["unenrolled"] = result
+            if op in ("check", "status"):
+                body.update(result)
             return build_response(200, body=body)
 
     def process_event(self, event):

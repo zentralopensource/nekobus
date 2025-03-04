@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import logging
 import requests
 import urllib.parse
@@ -54,6 +55,21 @@ class ZentralClient:
             logger.info("Unknown DEP device %s", serial_number)
             return None
 
+    def get_mdm_enrolled_device(self, serial_number):
+        logger.info("Get MDM enrolled device %s", serial_number)
+        try:
+            r = self.session.get(f"{self.api_base_url}/mdm/devices/", params={"serial_number": serial_number})
+            r.raise_for_status()
+        except Exception:
+            raise ZentralClientError(f"Could not search for MDM enrolled device {serial_number}")
+        r_json = r.json()
+        logger.info("Found %d MDM enrolled device(s) %s", len(r_json), serial_number)
+        latest_enrolled_device = None
+        for enrolled_device in r_json:
+            if latest_enrolled_device is None or enrolled_device["created_at"] > latest_enrolled_device["created_at"]:
+                latest_enrolled_device = enrolled_device
+        return latest_enrolled_device
+
     def get_tags(self, serial_number):
         logger.info("Get device %s tags", serial_number)
         url_safe_serial_number = make_url_safe_serial_number(serial_number)
@@ -87,6 +103,26 @@ class ZentralClient:
             logger.warning("Wrong profile status %s for DEP device %s", profile_status or "-", serial_number)
             ok = False
         return ok
+
+    def get_mdm_status(self, serial_number):
+        logger.info("Check MDM enrolled device %s status", serial_number)
+        enrolled_device = self.get_mdm_enrolled_device(serial_number)
+        if not enrolled_device:
+            logger.info("MDM enrolled device %s not found", serial_number)
+            return "not_found"
+        if enrolled_device.get("checkout_at"):
+            logger.info("MDM enrolled device %s checked out", serial_number)
+            return "checked_out"
+        valid_cert = False
+        try:
+            valid_cert = datetime.fromisoformat(enrolled_device["cert_not_valid_after"]) > datetime.utcnow()
+        except Exception:
+            logger.exception("Could not verify MDM enrolled device %s cert validity. Default to False", serial_number)
+        if not valid_cert:
+            logger.info("MDM enrolled device %s has invalid cert", serial_number)
+            return "invalid_cert"
+        logger.info("MDM enrolled device %s has valid cert", serial_number)
+        return "enrolled"
 
     def set_taxonomy_tags(self, serial_number, taxonomy, tags):
         logger.info("Set device %s taxonomy %s tag(s) %s", serial_number, taxonomy, ", ".join(tags))

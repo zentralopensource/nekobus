@@ -48,20 +48,21 @@ curl -s -XPOST -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 }
 ```
 
-### `confirm_unenrolled`
+### `status`
 
 HTTP Method: `GET`
 
-Confirm with a Jamf API call that the device is not MDM capable anymore. If this is the case, the *started tag* is removed and the *unenrolled tag* is set on the device in Zentral.
+Return the status of the enrollmemts in Jamf and Zentral. If the device is unenrolled in Jamf, the *started tag* is removed and the *unenrolled tag* is set on the device in Zentral.
 
 ```
 curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
-'https://xxx.lambda-url.us-east-1.on.aws/?operation=confirm_unenrolled&serial_number=ABCDEFGHIJK'|jq .
+'https://xxx.lambda-url.us-east-1.on.aws/?operation=confirm&serial_number=ABCDEFGHIJK'|jq .
 
 {
   "operation": "confirm_unenrolled",
   "serial_number": "ABCDEFGHIJK",
-  "unenrolled": true
+  "jamf_status": "unenrolled",
+  "zentral_status": "enrolled"
 }
 ```
 
@@ -96,5 +97,6 @@ You need a Role with the following permissions:
  * `inventory.add_machinetag`
  * `inventory.delete_machinetag`
  * `mdm.view_depdevice`
+ * `mdm.view_enrolleddevice`
 
 You need a Service Account attached to this Role. Save its API token.
