@@ -35,23 +35,43 @@ class MigrationManager:
         self.started_tag = started_tag
         self.unenrolled_tag = unenrolled_tag
         self.finished_tag = finished_tag
+        self.migration_tags = (
+            self.ready_tag,
+            self.started_tag,
+            self.unenrolled_tag,
+            self.finished_tag,
+        )
 
     def check(self, serial_number):
         logger.info("Check device %s", serial_number)
-        result = self.zentral_client.check_tag(serial_number, self.ready_tag)
-        if result is None:
+        # tags
+        tags = self.zentral_client.get_tags(serial_number)
+        has_expected_tag = False
+        if tags is None:
+            logger.warning("Device %s not found in inventory", serial_number)
+            migration_tags = []
+        else:
+            migration_tags = [t["name"] for t in tags if t["name"] in self.migration_tags]
+            has_expected_tag = self.ready_tag in migration_tags
+            if has_expected_tag:
+                logger.info("Device %s has the %s tag", serial_number, self.ready_tag)
+            else:
+                logger.warning("Device %s doesn't have the %s tag", serial_number, self.ready_tag)
+        # DEP status
+        dep_status = self.zentral_client.get_dep_status(serial_number, self.profile_uuid)
+        has_expected_dep_status = dep_status == "OK"
+        if has_expected_dep_status:
+            logger.info("Device %s DEP status %s", serial_number, dep_status)
+        else:
+            logger.warning("Device %s DEP status %s", serial_number, dep_status)
+        # 404 and default tags
+        if tags is None and dep_status == "unknown":
             raise MigrationError("Device not found", 404)
-        elif result:
-            logger.info("Device %s has the %s tag", serial_number, self.ready_tag)
-        else:
-            logger.info("Device %s doesn't have the %s tag", serial_number, self.ready_tag)
-            return {"check": False}
-        if self.zentral_client.check_dep_device_enrollment(serial_number, self.profile_uuid):
-            logger.info("Device %s DEP enrollment %s OK", serial_number, self.profile_uuid)
-            return {"check": True}
-        else:
-            logger.info("Device %s DEP enrollment %s OK", serial_number, self.profile_uuid)
-            return {"check": False}
+        return {
+            "dep_status": dep_status,
+            "migration_tags": migration_tags,
+            "check": has_expected_tag and has_expected_dep_status
+        }
 
     def start(self, serial_number):
         logger.info("Start device %s migration", serial_number)
@@ -67,7 +87,7 @@ class MigrationManager:
     def status(self, serial_number):
         logger.info("Get device %s MDM status", serial_number)
         # Just to be sure
-        if not self.zentral_client.check_dep_device_enrollment(serial_number, self.profile_uuid):
+        if not self.zentral_client.get_dep_status(serial_number, self.profile_uuid) == "OK":
             raise MigrationError("Device doesn't have the expected DEP enrollment")
         jamf_status = self.jamf_client.get_mdm_status(serial_number)
         if jamf_status == "unenrolled":

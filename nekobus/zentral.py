@@ -82,27 +82,23 @@ class ZentralClient:
         except Exception:
             raise ZentralClientError(f"Could not get device {serial_number} tags")
 
-    def check_tag(self, serial_number, tag):
-        tags = self.get_tags(serial_number)
-        if tags is None:
-            return
-        return any(t["name"] == tag for t in tags)
-
-    def check_dep_device_enrollment(self, serial_number, expected_profile_uuid):
-        logger.info("Check DEP device %s enrollment", serial_number)
+    def get_dep_status(self, serial_number, expected_profile_uuid):
+        logger.info("Check DEP device %s enrollment status", serial_number)
         dep_device = self.get_dep_device(serial_number)
         if not dep_device:
-            return False
-        ok = True
+            return "unknown"
         profile_uuid = dep_device.get("profile_uuid")
+        if not profile_uuid:
+            logger.warning("DEP device %s has no profile", serial_number)
+            return "missing_profile"
         if profile_uuid != expected_profile_uuid:
             logger.warning("Wrong profile UUID %s for DEP device %s", profile_uuid or "-", serial_number)
-            ok = False
+            return "wrong_profile"
         profile_status = dep_device.get("profile_status")
         if profile_status not in ("assigned", "pushed"):
             logger.warning("Wrong profile status %s for DEP device %s", profile_status or "-", serial_number)
-            ok = False
-        return ok
+            return "wrong_profile_status"
+        return "OK"
 
     def get_mdm_status(self, serial_number):
         logger.info("Check MDM enrolled device %s status", serial_number)
