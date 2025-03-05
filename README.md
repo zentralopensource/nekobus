@@ -30,6 +30,11 @@ curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
 }
 ```
 
+**IMPORTANT:** A migration must not be attempted if `dep_status` is not `OK`!!!
+
+
+`check` is True if `dep_status` is `OK` and the *ready tag* is present in the `migration_tags`. If the `dep_status` is `OK` but the *ready tag* is not present, that is a good indication that a previous migration didn't finish as expected (not unenrolled, bad authentication, …).
+
 ### `start`
 
 HTTP Method: `POST`
