@@ -106,6 +106,9 @@ class ZentralClient:
         if not enrolled_device:
             logger.info("MDM enrolled device %s not found", serial_number)
             return "not_found"
+        if enrolled_device.get("blocked_at"):
+            logger.warning("MDM enrolled device %s blocked", serial_number)
+            return "blocked"
         if enrolled_device.get("checkout_at"):
             logger.info("MDM enrolled device %s checked out", serial_number)
             return "checked_out"
