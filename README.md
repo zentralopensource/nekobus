@@ -26,7 +26,7 @@ curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
   "serial_number": "ABCDEFGHIJK",
   "dep_status": "OK",
   "migration_tags": ["ready"],
-  "check": true,
+  "check": true
 }
 ```
 
