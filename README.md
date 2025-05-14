@@ -63,7 +63,7 @@ Return the status of the enrollmemts in Jamf and Zentral. If the device is unenr
 
 ```
 curl -s -H "Authorization: Bearer $THE_NEKOBUS_TOKEN" \
-'https://xxx.lambda-url.us-east-1.on.aws/?operation=confirm&serial_number=ABCDEFGHIJK'|jq .
+'https://xxx.lambda-url.us-east-1.on.aws/?operation=status&serial_number=ABCDEFGHIJK'|jq .
 
 {
   "operation": "status",
