@@ -47,7 +47,7 @@ jobs:
         run: zip -g ../nekobus_lambda.zip lambda_function.py
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           role-session-name: ztl_admin_nekobus_lambda
