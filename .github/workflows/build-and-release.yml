@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: vars.AWS_ROLE_ARN
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           filter: "tree:0"
@@ -47,7 +47,7 @@ jobs:
         run: zip -g ../nekobus_lambda.zip lambda_function.py
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           role-session-name: ztl_admin_nekobus_lambda
