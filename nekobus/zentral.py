@@ -63,9 +63,16 @@ class ZentralClient:
         except Exception:
             raise ZentralClientError(f"Could not search for MDM enrolled device {serial_number}")
         r_json = r.json()
-        logger.info("Found %d MDM enrolled device(s) %s", len(r_json), serial_number)
+        if "count" in r_json:
+            device_count = r_json["count"]
+            device_iter = r_json.get("results", [])
+        else:
+            # Older version of the API. TODO: remove.
+            device_count = len(r_json)
+            device_iter = r_json
+        logger.info("Found %d MDM enrolled device(s) %s", device_count, serial_number)
         latest_enrolled_device = None
-        for enrolled_device in r_json:
+        for enrolled_device in device_iter:
             if latest_enrolled_device is None or enrolled_device["created_at"] > latest_enrolled_device["created_at"]:
                 latest_enrolled_device = enrolled_device
         return latest_enrolled_device
