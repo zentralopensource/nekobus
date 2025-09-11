@@ -79,7 +79,6 @@ class MigrationManager:
         # without making sure that they can enroll again
         if not self.check(serial_number):
             raise MigrationError("Device not ready for migration")
-            return False
         self.jamf_client.unmanage_computer_device(serial_number)
         self.zentral_client.set_taxonomy_tags(serial_number, self.taxonomy, [self.started_tag])
         logger.info("Device %s migration started", serial_number)
