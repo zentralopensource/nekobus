@@ -19,7 +19,7 @@ jobs:
   scan-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           # Do persist credentials, as we need it for the git checkout later
