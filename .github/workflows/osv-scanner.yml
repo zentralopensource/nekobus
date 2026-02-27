@@ -51,7 +51,7 @@ jobs:
       # Upload the results as artifacts.
       - name: "Upload artifact"
         if: "!cancelled()"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: SARIF file
           path: results.sarif
